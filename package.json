@@ -5,14 +5,19 @@
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "1_OpenAiChat.js",
+  "main": "server.js",
   "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@langchain/core": "^1.1.32",
     "@langchain/google-genai": "^2.1.25",
+    "cors": "^2.8.5",
     "dotenv": "^17.3.1",
+    "express": "^4.21.2",
     "nodemon": "^3.1.14",
     "openai": "^6.27.0"
   }

@@ -9,7 +9,7 @@ const googleModel = new ChatGoogleGenerativeAI({
 })
 
 // const aiAnswer = async (qsn)=>{
-//     const response = await googleModel.invoke([
+//     const response = await googleModel.invoke([ 
 //         new HumanMessage(qsn)
 //     ])
 //     console.log(response.content)
@@ -23,7 +23,7 @@ const aiAnswer = async (qsn)=>{
     content.push({role:"user", content:qsn})
     const response = await googleModel.invoke(content)
     content.push({role:"assistant", content:response.content})
-    console.log(response.content)
+    console.log(response.content, response.usage_metadata)
 }
 
 process.stdout.write("Ask any question :")
@@ -35,6 +35,3 @@ process.stdin.on("data", (data)=>{
         aiAnswer(qsn)
     }
 })
-
-
-

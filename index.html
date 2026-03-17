@@ -645,30 +645,29 @@
       <div class="grid-2">
         <div class="field">
           <label>GitHub Personal Access Token</label>
-          <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+          <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" required>
         </div>
         <div class="field">
           <label>Repository (owner/repo)</label>
-          <input type="text" id="gh-repo" placeholder="e.g. acme/frontend">
+          <input type="text" id="gh-repo" placeholder="e.g. acme/frontend" required>
         </div>
       </div>
       <div class="grid-3 row-gap">
         <div class="field">
           <label>Branch</label>
-          <input type="text" id="gh-branch" placeholder="main" value="main">
-        </div>
-        <div class="field">
-          <label>Author (GitHub username)</label>
-          <input type="text" id="gh-author" placeholder="your-username">
+          <input type="text" id="gh-branch" placeholder="main" list="gh-branch-list" value="main">
+          <datalist id="gh-branch-list"></datalist>
         </div>
         <div class="field">
           <label>Date</label>
           <input type="date" id="gh-date">
         </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <button class="btn-sm" style="width:100%;" onclick="fetchGitHubCommits()">⟳ Fetch Commits</button>
+        </div>
       </div>
-      <div style="margin-top:12px; text-align:right;">
-        <button class="btn-sm" onclick="fetchGitHubCommits()">⟳ Fetch Commits</button>
-      </div>
+      <datalist id="gh-repo-list"></datalist>
     </div>
 
     <!-- GitLab Tab -->
@@ -676,25 +675,25 @@
       <div class="grid-2">
         <div class="field">
           <label>GitLab Personal Access Token</label>
-          <input type="password" id="gl-token" placeholder="glpat-xxxxxxxxxxxxxxxxxxxx">
+          <input type="password" id="gl-token" placeholder="glpat-xxxxxxxxxxxxxxxxxxxx" required>
         </div>
         <div class="field">
           <label>Project ID or namespace/repo</label>
-          <input type="text" id="gl-project" placeholder="e.g. 12345678 or group/project">
+          <input type="text" id="gl-project" placeholder="e.g. 12345678 or group/project" required>
         </div>
       </div>
       <div class="grid-3 row-gap">
-        <div class="field">
-          <label>GitLab Host (optional)</label>
-          <input type="text" id="gl-host" placeholder="gitlab.com" value="gitlab.com">
-        </div>
+      <div class="field">
+        <label>GitLab Host (optional)</label>
+        <input type="text" id="gl-host" placeholder="gitlab.com" value="gitlab.com">
+      </div>
         <div class="field">
           <label>Branch</label>
-          <input type="text" id="gl-branch" placeholder="main" value="main">
+          <input type="text" id="gl-branch" placeholder="main" value="main" required>
         </div>
         <div class="field">
           <label>Date</label>
-          <input type="date" id="gl-date">
+          <input type="date" id="gl-date" required>
         </div>
       </div>
       <div style="margin-top:12px; text-align:right;">
@@ -794,6 +793,30 @@ let currentTab = 'github';
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('gh-date').value = today;
   document.getElementById('gl-date').value = today;
+
+  // Restore saved values
+  try {
+    const savedProject = localStorage.getItem('devlog_project');
+    const savedDevName = localStorage.getItem('devlog_dev_name');
+    const savedGhToken = localStorage.getItem('devlog_gh_token');
+    const savedGhRepo  = localStorage.getItem('devlog_gh_repo');
+    const savedGhBranch = localStorage.getItem('devlog_gh_branch');
+    const savedGhDate   = localStorage.getItem('devlog_gh_date');
+
+    if (savedProject) document.getElementById('project-name').value = savedProject;
+    if (savedDevName) document.getElementById('dev-name').value = savedDevName;
+    if (savedGhToken) document.getElementById('gh-token').value = savedGhToken;
+    if (savedGhRepo)  document.getElementById('gh-repo').value  = savedGhRepo;
+    if (savedGhBranch) document.getElementById('gh-branch').value = savedGhBranch;
+    if (savedGhDate)   document.getElementById('gh-date').value   = savedGhDate;
+  } catch {}
+
+  // Auto-load GitHub repos when token changes (debounced)
+  let repoLoadTimer;
+  document.getElementById('gh-token').addEventListener('input', () => {
+    clearTimeout(repoLoadTimer);
+    repoLoadTimer = setTimeout(loadGitHubRepos, 600);
+  });
 })();
 
 // ── Tab switch ───────────────────────────────────────
@@ -812,17 +835,26 @@ async function fetchGitHubCommits() {
   const token = document.getElementById('gh-token').value.trim();
   const repo  = document.getElementById('gh-repo').value.trim();
   const branch = document.getElementById('gh-branch').value.trim() || 'main';
-  const author = document.getElementById('gh-author').value.trim();
   const date  = document.getElementById('gh-date').value;
 
-  if (!repo) { showFetchError('Please enter a repository (owner/repo)'); return; }
+  if (!token) { showFetchError('GitHub token is required.'); return; }
+  if (!repo) { showFetchError('Repository (owner/repo) is required.'); return; }
+  if (!branch) { showFetchError('Branch is required.'); return; }
+  if (!date) { showFetchError('Please pick a date.'); return; }
 
   hideFetchError();
+
+  // persist GitHub config for next session
+  try {
+    localStorage.setItem('devlog_gh_token', token);
+    localStorage.setItem('devlog_gh_repo', repo);
+    localStorage.setItem('devlog_gh_branch', branch);
+    if (date) localStorage.setItem('devlog_gh_date', date);
+  } catch {}
   const since = date + 'T00:00:00Z';
   const until = date + 'T23:59:59Z';
 
   let url = `https://api.github.com/repos/${repo}/commits?sha=${branch}&since=${since}&until=${until}&per_page=100`;
-  if (author) url += `&author=${author}`;
 
   const headers = { 'Accept': 'application/vnd.github+json' };
   if (token) headers['Authorization'] = 'Bearer ' + token;
@@ -845,6 +877,58 @@ async function fetchGitHubCommits() {
     showFetchError('GitHub Error: ' + e.message);
   }
 }
+// ── GitHub helper: load repos & branches ────────────────
+async function loadGitHubRepos() {
+  const token = document.getElementById('gh-token').value.trim();
+  if (!token) return;
+
+  const list = document.getElementById('gh-repo-list');
+  if (!list) return;
+
+  try {
+    const res = await fetch('https://api.github.com/user/repos?per_page=100', {
+      headers: {
+        'Accept': 'application/vnd.github+json',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+    if (!res.ok) return;
+    const repos = await res.json();
+    list.innerHTML = repos.map(r =>
+      `<option value="${escHtml(r.full_name)}"></option>`
+    ).join('');
+    document.getElementById('gh-repo').setAttribute('list', 'gh-repo-list');
+  } catch {
+    // ignore autocomplete errors
+  }
+}
+
+async function loadGitHubBranches() {
+  const token = document.getElementById('gh-token').value.trim();
+  const repo  = document.getElementById('gh-repo').value.trim();
+  if (!token || !repo) return;
+  const list = document.getElementById('gh-branch-list');
+  if (!list) return;
+
+  try {
+    const res = await fetch(`https://api.github.com/repos/${repo}/branches?per_page=100`, {
+      headers: {
+        'Accept': 'application/vnd.github+json',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+    if (!res.ok) return;
+    const branches = await res.json();
+    list.innerHTML = branches.map(b =>
+      `<option value="${escHtml(b.name)}"></option>`
+    ).join('');
+  } catch {
+    // ignore autocomplete errors
+  }
+}
+
+document.getElementById('gh-repo').addEventListener('blur', loadGitHubBranches);
+
 
 // ── GitLab Fetch ─────────────────────────────────────
 async function fetchGitLabCommits() {
@@ -911,6 +995,19 @@ async function generateReport() {
   const devName = document.getElementById('dev-name').value.trim();
   const extra   = document.getElementById('extra-prompt').value.trim();
 
+  if (!project) { showGenerateError('Project / Client Name is required.'); return; }
+  if (!devName) { showGenerateError('Your Name / Role is required.'); return; }
+  if (!fetchedCommits.length && !extra) {
+    showGenerateError('Please fetch commits for the day or provide Additional Context before generating the report.');
+    return;
+  }
+
+  // persist commonly used fields
+  try {
+    localStorage.setItem('devlog_project', project);
+    if (devName) localStorage.setItem('devlog_dev_name', devName);
+  } catch {}
+
   hideGenerateError();
   setGenerating(true);
 
@@ -950,7 +1047,10 @@ async function generateReport() {
 // ── Render Report ─────────────────────────────────────
 function renderReport(report, project, devName) {
   document.getElementById('report-title').textContent = 'Project / Client Name: ' + project;
-  document.getElementById('report-summary').textContent = report.summary;
+  const longDate = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' });
+  const employee = devName || 'Employee';
+  document.getElementById('report-summary').textContent =
+    `Date - ${longDate}\nEmployee Name: ${employee}\nProject / Client Name: ${project}\n\n${report.summary}`;
 
   const tbody = document.getElementById('report-tbody');
   tbody.innerHTML = report.tasks.map(task => `
@@ -996,19 +1096,83 @@ function copyTable() {
   const tsv = rows.map(r =>
     [...r.querySelectorAll('th, td')].map(c => c.innerText.replace(/\n/g,' ').trim()).join('\t')
   ).join('\n');
-  navigator.clipboard.writeText(tsv).then(() => alert('Table copied as TSV (paste into Excel/Sheets)'));
+
+  // Build an HTML table for rich paste (e.g., Outlook)
+  const htmlTable =
+    '<table border="1" cellpadding="4" cellspacing="0" style="border-collapse:collapse;">' +
+    rows.map((r, idx) => {
+      const cells = [...r.querySelectorAll('th, td')];
+      const tag = idx === 0 ? 'th' : 'td';
+      const inner = cells.map(c =>
+        `<${tag} style="border:1px solid #888;padding:4px 8px;">${c.innerText.replace(/\n/g,' ').trim()}</${tag}>`
+      ).join('');
+      return `<tr>${inner}</tr>`;
+    }).join('') +
+    '</table>';
+
+  if (navigator.clipboard && window.ClipboardItem) {
+    const item = new ClipboardItem({
+      'text/html': new Blob([htmlTable], { type: 'text/html' }),
+      'text/plain': new Blob([tsv], { type: 'text/plain' }),
+    });
+    navigator.clipboard.write([item]).then(() =>
+      alert('Table copied. Paste into Outlook/Word to keep the table formatting.'));
+  } else {
+    navigator.clipboard.writeText(tsv).then(() =>
+      alert('Table copied as text (TSV).'));
+  }
 }
 
 function copyFullReport() {
-  const title   = document.getElementById('report-title').innerText;
-  const summary = document.getElementById('report-summary').innerText;
+  const project = document.getElementById('project-name').value.trim() || 'Project';
+  const devName = document.getElementById('dev-name').value.trim() || 'Employee';
+  const longDate = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' });
+
   const table   = document.getElementById('report-table');
   const rows    = [...table.querySelectorAll('tr')];
   const tsv     = rows.map(r =>
     [...r.querySelectorAll('th, td')].map(c => c.innerText.replace(/\n/g,' ').trim()).join('\t')
   ).join('\n');
-  navigator.clipboard.writeText(`${title}\n\n${summary}\n\n${tsv}`).then(() =>
-    alert('Full report copied!'));
+
+  const plainBody =
+    `Date - ${longDate}\n` +
+    `Employee Name: ${devName}\n` +
+    `Project / Client Name: ${project}\n\n` +
+    `${tsv}\n\n` +
+    `Best Regards,\n${devName}`;
+
+  // HTML email-friendly version with real <table>
+  const htmlHeader =
+    `<p>Date - ${longDate}<br>` +
+    `Employee Name: ${devName}<br>` +
+    `Project / Client Name: ${project}</p>`;
+
+  const htmlTable =
+    '<table border="1" cellpadding="4" cellspacing="0" style="border-collapse:collapse;">' +
+    rows.map((r, idx) => {
+      const cells = [...r.querySelectorAll('th, td')];
+      const tag = idx === 0 ? 'th' : 'td';
+      const inner = cells.map(c =>
+        `<${tag} style="border:1px solid #888;padding:4px 8px;">${c.innerText.replace(/\n/g,' ').trim()}</${tag}>`
+      ).join('');
+      return `<tr>${inner}</tr>`;
+    }).join('') +
+    '</table>';
+
+  const htmlFooter = `<p>Best Regards,<br>${devName}</p>`;
+  const htmlBody = `${htmlHeader}${htmlTable}${htmlFooter}`;
+
+  if (navigator.clipboard && window.ClipboardItem) {
+    const item = new ClipboardItem({
+      'text/html': new Blob([htmlBody], { type: 'text/html' }),
+      'text/plain': new Blob([plainBody], { type: 'text/plain' }),
+    });
+    navigator.clipboard.write([item]).then(() =>
+      alert('Full report copied. Paste into Outlook/Word to keep formatting.'));
+  } else {
+    navigator.clipboard.writeText(plainBody).then(() =>
+      alert('Full report copied as plain text.'));
+  }
 }
 
 function printReport() {

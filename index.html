@@ -265,12 +265,161 @@
   .report-wrapper.vis { display: block; }
   @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
 
-  .report-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+  .report-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
   .report-badge { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
   .report-badge::before { content: '✓'; width: 20px; height: 20px; background: rgba(79,255,176,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; }
-  .btn-actions { display: flex; gap: 8px; }
+  .btn-actions { display: flex; gap: 8px; flex-wrap: wrap; }
   .btn-sm { padding: 8px 16px; border-radius: 6px; font-family: var(--mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border); background: var(--surface2); color: var(--text-muted); transition: all 0.15s; }
   .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-outlook {
+    border-color: rgba(123,111,240,0.4) !important;
+    color: var(--accent2) !important;
+    background: rgba(123,111,240,0.08) !important;
+  }
+  .btn-outlook:hover {
+    border-color: var(--accent2) !important;
+    color: #fff !important;
+    background: rgba(123,111,240,0.18) !important;
+    box-shadow: 0 0 12px rgba(123,111,240,0.2);
+  }
+
+  /* Split button container */
+  .outlook-split {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+  .outlook-main {
+    border-radius: 6px 0 0 6px !important;
+    border-right: none !important;
+    white-space: nowrap;
+  }
+  .outlook-caret {
+    border-radius: 0 6px 6px 0 !important;
+    padding: 8px 10px !important;
+    border-left: 1px solid rgba(123,111,240,0.25) !important;
+    min-width: 30px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .outlook-caret svg { transition: transform 0.2s; }
+  .outlook-split.menu-open .outlook-caret svg { transform: rotate(180deg); }
+
+  /* Outlook dropdown menu */
+  .outlook-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    width: 310px;
+    background: #0f1119;
+    border: 1px solid var(--accent2);
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(123,111,240,0.06);
+    z-index: 9999;
+    overflow: hidden;
+    animation: menuIn 0.15s ease;
+  }
+  .outlook-menu.open { display: block; }
+  @keyframes menuIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
+
+  .om-header {
+    padding: 10px 14px 8px;
+    font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--text-dim); border-bottom: 1px solid var(--border);
+  }
+
+  .om-opt {
+    width: 100%; display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 14px; cursor: pointer; background: transparent; border: none;
+    border-left: 2px solid transparent; text-align: left; font-family: var(--mono);
+    transition: background 0.1s, border-left-color 0.1s;
+  }
+  .om-opt:hover { background: rgba(123,111,240,0.06); border-left-color: var(--accent2); }
+  .om-opt.active { background: rgba(123,111,240,0.1); border-left-color: var(--accent2); }
+
+  .om-icon {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: rgba(123,111,240,0.12); border: 1px solid rgba(123,111,240,0.25);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent2); flex-shrink: 0; margin-top: 1px;
+  }
+  .om-opt.active .om-icon { background: rgba(123,111,240,0.2); }
+  .om-icon-office { background: rgba(0,120,212,0.12) !important; border-color: rgba(0,120,212,0.3) !important; color: #3fa0e8 !important; }
+  .om-opt.active .om-icon-office { background: rgba(0,120,212,0.22) !important; }
+  .om-icon-live { background: rgba(16,174,132,0.12) !important; border-color: rgba(16,174,132,0.3) !important; color: #10ae84 !important; }
+  .om-opt.active .om-icon-live { background: rgba(16,174,132,0.22) !important; }
+
+  .om-text { flex: 1; min-width: 0; }
+  .om-name { display: block; font-size: 12px; color: var(--text); margin-bottom: 2px; }
+  .om-desc { display: block; font-size: 10px; color: var(--text-dim); }
+
+  .om-check {
+    width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;
+    color: var(--accent2); flex-shrink: 0; margin-top: 4px;
+  }
+  .om-check svg { display: none; }
+  .om-opt.active .om-check svg { display: block; }
+
+  .om-custom-url {
+    padding: 0 14px 12px;
+    display: flex; gap: 8px;
+  }
+  .om-url-input {
+    flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 5px;
+    color: var(--text); font-family: var(--mono); font-size: 11px;
+    padding: 7px 10px; outline: none; transition: border-color 0.15s;
+  }
+  .om-url-input:focus { border-color: var(--accent2); }
+  .om-url-save {
+    padding: 7px 12px; background: rgba(123,111,240,0.15); border: 1px solid rgba(123,111,240,0.35);
+    border-radius: 5px; color: var(--accent2); font-family: var(--mono); font-size: 11px;
+    cursor: pointer; white-space: nowrap; transition: all 0.15s;
+  }
+  .om-url-save:hover { background: rgba(123,111,240,0.25); color: #fff; }
+
+  .om-divider { height: 1px; background: var(--border); margin: 0; }
+  .om-footer {
+    padding: 8px 14px; font-size: 10px; color: var(--text-dim);
+    display: flex; gap: 6px; align-items: center;
+  }
+
+  /* Hours Budget Bar */
+  .hours-budget-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 20px; margin-bottom: 16px; flex-wrap: wrap;
+  }
+  .hb-left { display: flex; flex-direction: column; gap: 2px; }
+  .hb-label { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
+  .hb-hint { font-size: 10px; color: var(--text-dim); }
+  .hb-right { display: flex; align-items: center; gap: 10px; }
+  .hb-track { width: 160px; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .hb-fill { height: 100%; border-radius: 3px; transition: width 0.3s ease, background 0.3s ease; }
+  .hb-used { font-size: 14px; font-weight: 600; color: var(--accent); font-family: var(--mono); transition: color 0.3s; }
+  .hb-sep { color: var(--text-dim); }
+  .hb-max { font-size: 13px; color: var(--text-muted); }
+  .hb-remaining { font-size: 11px; color: var(--text-dim); white-space: nowrap; }
+
+  /* Editable hours */
+  .hours-display {
+    display: inline-flex; align-items: center; gap: 5px; cursor: pointer;
+    padding: 3px 6px; border-radius: 4px; transition: background 0.15s;
+    border: 1px solid transparent;
+  }
+  .hours-display:hover { background: rgba(79,255,176,0.06); border-color: rgba(79,255,176,0.2); }
+  .hours-edit-icon { opacity: 0; transition: opacity 0.15s; color: var(--accent); flex-shrink: 0; }
+  .hours-display:hover .hours-edit-icon { opacity: 1; }
+  .hours-val { color: var(--text); font-weight: 500; }
+  .hours-edit-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+  .hours-input {
+    width: 70px; background: var(--bg); border: 1px solid var(--accent);
+    border-radius: 4px; color: var(--accent); font-family: var(--mono); font-size: 13px;
+    padding: 4px 8px; outline: none; text-align: right;
+    box-shadow: 0 0 0 2px rgba(79,255,176,0.1);
+  }
+  .hours-input::-webkit-inner-spin-button { opacity: 0.5; }
+  .hours-max-hint { font-size: 9px; color: var(--text-dim); white-space: nowrap; }
 
   .report-container { background: #1a1c24; border: 1px solid #2e3248; border-radius: 6px; overflow: hidden; font-family: var(--mono); }
   .report-project-title { padding: 20px 24px 14px; font-family: var(--display); font-size: 18px; font-weight: 700; color: var(--text); border-bottom: 1px solid #2e3248; letter-spacing: -0.3px; }
@@ -452,7 +601,7 @@
   <!-- Step 2 -->
   <div class="prompt-panel">
     <div class="panel-title">02 — Report Details &amp; Prompt</div>
-    <div class="grid-2">
+    <div class="grid-3">
       <div class="field">
         <label>Project / Client Name</label>
         <input type="text" id="project-name" placeholder="e.g. GridBase Frontend">
@@ -460,6 +609,10 @@
       <div class="field">
         <label>Your Name / Role</label>
         <input type="text" id="dev-name" placeholder="e.g. Alex — Frontend Dev">
+      </div>
+      <div class="field">
+        <label>Receiver Email <span style="color:var(--text-dim);font-size:9px;letter-spacing:0;">(for Outlook)</span></label>
+        <input type="email" id="receiver-email" placeholder="manager@company.com">
       </div>
     </div>
     <div class="field row-gap">
@@ -486,6 +639,100 @@
         <button class="btn-sm" onclick="copyTable()">Copy Table</button>
         <button class="btn-sm" onclick="copyFullReport()">Copy Full Report</button>
         <button class="btn-sm" onclick="printReport()">Print / Export PDF</button>
+        <!-- Outlook Split Button -->
+        <div class="outlook-split" id="outlook-split">
+          <button class="btn-sm btn-outlook outlook-main" onclick="openOutlookWithMode()" id="outlook-main-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:4px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <span id="outlook-main-label">Open in Outlook</span>
+          </button>
+          <button class="btn-sm btn-outlook outlook-caret" onclick="toggleOutlookMenu(event)" title="Choose how to open">
+            <svg width="10" height="10" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+          </button>
+          <!-- Dropdown Menu -->
+          <div class="outlook-menu" id="outlook-menu">
+            <div class="om-header">Choose where to open</div>
+
+            <button class="om-opt" id="om-desktop" onclick="setOutlookMode('desktop')">
+              <div class="om-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              </div>
+              <div class="om-text">
+                <span class="om-name">Outlook Desktop App</span>
+                <span class="om-desc">Installed Outlook / default mail client (mailto:)</span>
+              </div>
+              <div class="om-check" id="om-desktop-chk">
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </button>
+
+            <button class="om-opt" id="om-web" onclick="setOutlookMode('web')">
+              <div class="om-icon om-icon-office">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+              </div>
+              <div class="om-text">
+                <span class="om-name">Office 365 Web</span>
+                <span class="om-desc">outlook.office.com — work/school account</span>
+              </div>
+              <div class="om-check" id="om-web-chk">
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </button>
+
+            <button class="om-opt" id="om-web-personal" onclick="setOutlookMode('web-personal')">
+              <div class="om-icon om-icon-live">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+              </div>
+              <div class="om-text">
+                <span class="om-name">Outlook.com / Hotmail</span>
+                <span class="om-desc">outlook.live.com — personal Microsoft account</span>
+              </div>
+              <div class="om-check" id="om-web-personal-chk">
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </button>
+
+            <button class="om-opt" id="om-custom" onclick="setOutlookMode('custom')">
+              <div class="om-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+              </div>
+              <div class="om-text">
+                <span class="om-name">Custom / Company OWA</span>
+                <span class="om-desc">Your organisation's private Outlook web address</span>
+              </div>
+              <div class="om-check" id="om-custom-chk">
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </button>
+
+            <div class="om-custom-url" id="om-custom-url-row" style="display:none;">
+              <input type="text" id="om-custom-url-input" class="om-url-input" placeholder="https://mail.company.com">
+              <button class="om-url-save" onclick="saveCustomUrl()">Save</button>
+            </div>
+
+            <div class="om-divider"></div>
+            <div class="om-footer">
+              <span>Active:</span>
+              <span id="om-last-used" style="color:var(--accent2);">Desktop App</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hours Budget Bar -->
+    <div class="hours-budget-bar" id="hours-budget-bar">
+      <div class="hb-left">
+        <span class="hb-label">Daily Hours Budget</span>
+        <span class="hb-hint">Click any hour value in the table to edit · Max 8h total</span>
+      </div>
+      <div class="hb-right">
+        <div class="hb-track">
+          <div class="hb-fill" id="hb-fill"></div>
+        </div>
+        <span class="hb-used" id="hb-used">0h</span>
+        <span class="hb-sep">/</span>
+        <span class="hb-max">8h</span>
+        <span class="hb-remaining" id="hb-remaining"></span>
       </div>
     </div>
     <div class="report-container">
@@ -539,9 +786,11 @@ function branchId(repo) { return 'br_' + repo.replace(/[^a-z0-9]/gi, '_'); }
     const p = localStorage.getItem('devlog_project');
     const d = localStorage.getItem('devlog_dev_name');
     const t = localStorage.getItem('devlog_gh_token');
+    const re = localStorage.getItem('devlog_receiver_email');
     if (p) document.getElementById('project-name').value = p;
     if (d) document.getElementById('dev-name').value = d;
     if (t) document.getElementById('gh-token').value = t;
+    if (re) document.getElementById('receiver-email').value = re;
   } catch {}
 
   document.addEventListener('click', function(e) {
@@ -966,7 +1215,12 @@ async function generateReport() {
   if (!devName) { showGenErr('Your Name / Role is required.'); return; }
   if (!fetchedCommits.length && !extra) { showGenErr('Please fetch commits or provide Additional Context before generating.'); return; }
 
-  try { localStorage.setItem('devlog_project', project); if (devName) localStorage.setItem('devlog_dev_name', devName); } catch {}
+  try {
+    localStorage.setItem('devlog_project', project);
+    if (devName) localStorage.setItem('devlog_dev_name', devName);
+    const re = document.getElementById('receiver-email').value.trim();
+    if (re) localStorage.setItem('devlog_receiver_email', re);
+  } catch {}
   hideGenErr();
   setGenerating(true);
 
@@ -988,37 +1242,428 @@ async function generateReport() {
 /* ══════════════════════════════════════════
    RENDER REPORT
 ══════════════════════════════════════════ */
+let currentTasks = []; // live editable task list
+
 function renderReport(report, project, devName) {
+  // Normalize total to max 8h and distribute proportionally
+  const rawTotal = report.tasks.reduce((s, t) => s + parseFloat(t.hours || 0), 0);
+  const MAX_HOURS = 8;
+  currentTasks = report.tasks.map(t => {
+    let h = parseFloat(t.hours) || 0;
+    if (rawTotal > MAX_HOURS) h = Math.round((h / rawTotal) * MAX_HOURS * 4) / 4; // round to 0.25
+    return { ...t, hours: h };
+  });
+  // Re-sum after rounding — distribute leftover to biggest task
+  let adjustedTotal = currentTasks.reduce((s, t) => s + t.hours, 0);
+  if (rawTotal > MAX_HOURS && adjustedTotal !== MAX_HOURS) {
+    const diff = Math.round((MAX_HOURS - adjustedTotal) * 4) / 4;
+    const maxIdx = currentTasks.reduce((mi, t, i, arr) => t.hours > arr[mi].hours ? i : mi, 0);
+    currentTasks[maxIdx].hours = Math.round((currentTasks[maxIdx].hours + diff) * 4) / 4;
+  }
+
   document.getElementById('report-title').textContent = 'Project / Client Name: ' + project;
   const longDate = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' });
   document.getElementById('report-summary').textContent =
     `Date - ${longDate}\nEmployee Name: ${devName || 'Employee'}\nProject / Client Name: ${project}\n\n${report.summary}`;
 
-  document.getElementById('report-tbody').innerHTML = report.tasks.map(t => `
-    <tr>
-      <td>${esc(t.project)}</td><td>${esc(t.description)}</td>
-      <td class="col-hours">${t.hours}</td>
-      <td>${statusPill(t.status)}</td>
-      <td>${esc(t.remarks||'')}</td>
-    </tr>`).join('') + `
-    <tr class="total-row">
-      <td><strong>Total</strong></td><td></td>
-      <td class="col-hours"><strong>${report.totalHours}</strong></td>
-      <td></td><td></td>
-    </tr>`;
+  rebuildTable();
 
   const dateStr = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
   document.getElementById('report-footer-l').textContent = (devName ? devName + ' · ' : '') + dateStr;
-  document.getElementById('report-footer-r').textContent = report.tasks.length + ' tasks · ' + report.totalHours + ' hrs total';
 
   const rw = document.getElementById('report-wrapper');
   rw.classList.add('vis');
   rw.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
+function calcTotal() {
+  return Math.round(currentTasks.reduce((s, t) => s + (parseFloat(t.hours)||0), 0) * 4) / 4;
+}
+
+function rebuildTable() {
+  const total = calcTotal();
+  const tbody = document.getElementById('report-tbody');
+
+  tbody.innerHTML = currentTasks.map((t, i) => `
+    <tr data-idx="${i}">
+      <td>${esc(t.project)}</td>
+      <td>${esc(t.description)}</td>
+      <td class="col-hours hours-cell" data-idx="${i}">
+        <div class="hours-display" onclick="startEditHours(${i})">
+          <span class="hours-val">${fmtH(t.hours)}</span>
+          <svg class="hours-edit-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+      </td>
+      <td>${statusPill(t.status)}</td>
+      <td>${esc(t.remarks||'')}</td>
+    </tr>`).join('') + `
+    <tr class="total-row">
+      <td><strong>Total</strong></td><td></td>
+      <td class="col-hours"><strong id="total-hours-cell">${fmtH(total)}</strong></td>
+      <td></td><td></td>
+    </tr>`;
+
+  updateHoursBudget(total);
+  document.getElementById('report-footer-r').textContent = currentTasks.length + ' tasks · ' + fmtH(total) + ' hrs total';
+}
+
+function fmtH(v) {
+  const n = parseFloat(v) || 0;
+  return n % 1 === 0 ? String(n) : n.toFixed(2).replace(/\.?0+$/, '');
+}
+
+function updateHoursBudget(total) {
+  const MAX = 8;
+  const pct = Math.min(total / MAX * 100, 100);
+  const fill = document.getElementById('hb-fill');
+  const used = document.getElementById('hb-used');
+  const rem  = document.getElementById('hb-remaining');
+  if (!fill) return;
+
+  fill.style.width = pct + '%';
+  fill.style.background = total > MAX ? 'var(--accent3)' : total >= MAX * 0.9 ? 'var(--inprogress)' : 'var(--accent)';
+  used.textContent = fmtH(total) + 'h';
+  used.style.color = total > MAX ? 'var(--accent3)' : total >= MAX * 0.9 ? 'var(--inprogress)' : 'var(--accent)';
+  const left = Math.max(0, MAX - total);
+  rem.textContent = left > 0 ? `(${fmtH(left)}h remaining)` : total > MAX ? `(${fmtH(total - MAX)}h over!)` : '(full)';
+  rem.style.color = total > MAX ? 'var(--accent3)' : 'var(--text-dim)';
+}
+
+function startEditHours(idx) {
+  const MAX = 8;
+  const cell = document.querySelector(`.hours-cell[data-idx="${idx}"]`);
+  if (!cell || cell.querySelector('input')) return;
+
+  const curVal = currentTasks[idx].hours;
+  const otherTotal = currentTasks.reduce((s, t, i) => i !== idx ? s + (parseFloat(t.hours)||0) : s, 0);
+  const maxAllowed = Math.round((MAX - otherTotal) * 4) / 4;
+
+  cell.innerHTML = `
+    <div class="hours-edit-wrap">
+      <input type="number" class="hours-input" id="hi-${idx}" value="${curVal}" min="0" max="${maxAllowed}" step="0.25"
+        onblur="commitHours(${idx})" onkeydown="hoursKey(event,${idx})">
+      <span class="hours-max-hint">max ${fmtH(maxAllowed)}h</span>
+    </div>`;
+  const inp = document.getElementById('hi-' + idx);
+  inp.focus();
+  inp.select();
+}
+
+function commitHours(idx) {
+  const inp = document.getElementById('hi-' + idx);
+  if (!inp) return;
+  const MAX = 8;
+  const otherTotal = currentTasks.reduce((s, t, i) => i !== idx ? s + (parseFloat(t.hours)||0) : s, 0);
+  const maxAllowed = Math.round((MAX - otherTotal) * 4) / 4;
+  let val = parseFloat(inp.value);
+  if (isNaN(val) || val < 0) val = 0;
+  if (val > maxAllowed) val = maxAllowed;
+  val = Math.round(val * 4) / 4; // snap to 0.25
+  currentTasks[idx].hours = val;
+  rebuildTable();
+}
+
+function hoursKey(e, idx) {
+  if (e.key === 'Enter') { e.preventDefault(); commitHours(idx); }
+  if (e.key === 'Escape') { rebuildTable(); }
+}
+
 function statusPill(s) {
   const m = { 'Completed':'status-completed', 'In Progress':'status-inprogress', 'Pending':'status-pending' };
   return `<span class="status-pill ${m[s]||'status-pending'}">${esc(s)}</span>`;
+}
+
+/* ══════════════════════════════════════════
+   OUTLOOK SPLIT BUTTON
+══════════════════════════════════════════ */
+let outlookMode = 'desktop'; // 'desktop' | 'web' | 'custom'
+let customOutlookUrl = '';
+
+(function initOutlookMode() {
+  try {
+    const saved = localStorage.getItem('devlog_outlook_mode');
+    const savedUrl = localStorage.getItem('devlog_outlook_custom_url');
+    if (saved) outlookMode = saved;
+    if (savedUrl) customOutlookUrl = savedUrl;
+  } catch {}
+  setTimeout(() => {
+    updateOutlookModeUI();
+    if (customOutlookUrl) {
+      const inp = document.getElementById('om-custom-url-input');
+      if (inp) inp.value = customOutlookUrl;
+    }
+  }, 100);
+})();
+
+function toggleOutlookMenu(e) {
+  e.stopPropagation();
+  const split = document.getElementById('outlook-split');
+  const menu  = document.getElementById('outlook-menu');
+  const isOpen = menu.classList.contains('open');
+  // Close all other dropdowns first
+  document.querySelectorAll('.cs-panel.is-open').forEach(p => p.classList.remove('is-open'));
+  document.querySelectorAll('.cs-trigger.is-open').forEach(t => t.classList.remove('is-open'));
+  menu.classList.toggle('open', !isOpen);
+  split.classList.toggle('menu-open', !isOpen);
+}
+
+function setOutlookMode(mode) {
+  outlookMode = mode;
+  try { localStorage.setItem('devlog_outlook_mode', mode); } catch {}
+  updateOutlookModeUI();
+  if (mode !== 'custom') {
+    document.getElementById('outlook-menu').classList.remove('open');
+    document.getElementById('outlook-split').classList.remove('menu-open');
+  }
+}
+
+function updateOutlookModeUI() {
+  const labels = {
+    desktop: 'Open in Outlook',
+    web: 'Open in Office 365',
+    'web-personal': 'Open in Outlook.com',
+    custom: 'Open in Web Mail'
+  };
+  const lastUsed = {
+    desktop: 'Desktop App',
+    web: 'Office 365 Web',
+    'web-personal': 'Outlook.com',
+    custom: 'Custom OWA'
+  };
+  const lbl = document.getElementById('outlook-main-label');
+  const last = document.getElementById('om-last-used');
+  const customRow = document.getElementById('om-custom-url-row');
+  if (lbl) lbl.textContent = labels[outlookMode] || 'Open in Outlook';
+  if (last) last.textContent = lastUsed[outlookMode] || 'Desktop App';
+
+  ['desktop','web','web-personal','custom'].forEach(m => {
+    const btn = document.getElementById('om-' + m);
+    if (btn) btn.classList.toggle('active', m === outlookMode);
+  });
+  if (customRow) customRow.style.display = outlookMode === 'custom' ? 'flex' : 'none';
+}
+
+function saveCustomUrl() {
+  const inp = document.getElementById('om-custom-url-input');
+  if (!inp) return;
+  customOutlookUrl = inp.value.trim();
+  try { localStorage.setItem('devlog_outlook_custom_url', customOutlookUrl); } catch {}
+  document.getElementById('outlook-menu').classList.remove('open');
+  document.getElementById('outlook-split').classList.remove('menu-open');
+  updateOutlookModeUI();
+}
+
+// Close outlook menu on outside click
+document.addEventListener('click', function(e) {
+  const split = document.getElementById('outlook-split');
+  if (split && !split.contains(e.target)) {
+    document.getElementById('outlook-menu').classList.remove('open');
+    split.classList.remove('menu-open');
+  }
+});
+
+function openOutlookWithMode() {
+  const mode = outlookMode;
+  const project = document.getElementById('project-name').value.trim() || 'Project';
+  const devName = document.getElementById('dev-name').value.trim() || 'Employee';
+  const to = document.getElementById('receiver-email').value.trim();
+  const longDate = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' });
+  const subject = `Daily Update - ${longDate}`;
+  const total = calcTotal();
+
+  // ── Build rich HTML email body ──────────────────────────────────────────
+  const rows = [...document.getElementById('report-table').querySelectorAll('tr')];
+  const htmlTable = buildHtmlEmailTable(rows);
+  const fullHtmlBody =
+    `<div style="font-family:Calibri,Arial,sans-serif;font-size:14px;color:#222;">` +
+    `<p style="margin:0 0 4px 0;">Date - ${longDate}<br>` +
+    `Employee Name: ${devName}<br>` +
+    `Project / Client Name: ${project}</p>` +
+    `<br>` +
+    htmlTable +
+    `<p style="margin:16px 0 0 0;">Best Regards,<br><strong>${devName}</strong></p>` +
+    `</div>`;
+
+  // ── Plain text fallback ─────────────────────────────────────────────────
+  const COL = [22, 55, 12, 15, 30];
+  function pad(str, len) { str = String(str||''); return str.length > len ? str.slice(0,len-1)+'…' : str.padEnd(len); }
+  const divider = COL.map(n => '-'.repeat(n)).join('+');
+  const hRow = [pad('Project/Client',COL[0]),pad('Task Description',COL[1]),pad('Hours',COL[2]),pad('Status',COL[3]),pad('Remarks',COL[4])].join('|');
+  const dRows = currentTasks.map(t => [pad(t.project,COL[0]),pad(t.description,COL[1]),pad(fmtH(t.hours),COL[2]),pad(t.status,COL[3]),pad(t.remarks||'',COL[4])].join('|'));
+  const tRow = [pad('Total',COL[0]),pad('',COL[1]),pad(fmtH(total),COL[2]),pad('',COL[3]),pad('',COL[4])].join('|');
+  const plainTable = [divider,hRow,divider,...dRows,divider,tRow,divider].join('\n');
+  const plainBody = `Date - ${longDate}\nEmployee Name: ${devName}\nProject / Client Name: ${project}\n\n${plainTable}\n\nBest Regards,\n${devName}`;
+
+  if (mode === 'desktop') {
+    // ── mailto: for installed Outlook / default mail app ─────────────────
+    const mailtoLink = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(plainBody)}`;
+    if (mailtoLink.length > 8000) {
+      copyToClipboard(fullHtmlBody, plainBody).then(() => {
+        showOutlookToast('✓ Report copied! Outlook is opening — paste (Ctrl+V) the formatted table into the body.');
+        setTimeout(() => { window.location.href = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}`; }, 400);
+      });
+    } else {
+      window.location.href = mailtoLink;
+    }
+
+  } else if (mode === 'web') {
+    // ── Office 365 OWA (outlook.office.com) — the correct deep link ──────
+    openOwaCompose('https://outlook.office.com', to, subject, fullHtmlBody, plainBody);
+
+  } else if (mode === 'web-personal') {
+    // ── Outlook.com / Hotmail / Live ──────────────────────────────────────
+    openOwaCompose('https://outlook.live.com', to, subject, fullHtmlBody, plainBody);
+
+  } else if (mode === 'custom') {
+    if (!customOutlookUrl) {
+      document.getElementById('outlook-menu').classList.add('open');
+      document.getElementById('outlook-split').classList.add('menu-open');
+      setTimeout(() => document.getElementById('om-custom-url-input').focus(), 100);
+      return;
+    }
+    openOwaCompose(customOutlookUrl.replace(/\/$/, ''), to, subject, fullHtmlBody, plainBody);
+  }
+}
+
+/* ── Core OWA compose opener ─────────────────────────────────────────────
+   Strategy:
+   1. Copy HTML to clipboard (for paste fallback)
+   2. Build the OWA deeplink/compose URL with to + subject
+   3. Embed body via a hidden form POST into a new window (works for OWA)
+      If that fails gracefully, fall back to URL params
+────────────────────────────────────────────────────────────────────────── */
+function openOwaCompose(baseOrigin, to, subject, htmlBody, plainBody) {
+  // Always copy rich HTML to clipboard as safety net
+  copyToClipboard(htmlBody, plainBody);
+
+  // Detect OWA vs outlook.live.com — they use slightly different paths
+  const isLive = baseOrigin.includes('outlook.live.com') || baseOrigin.includes('hotmail') || baseOrigin.includes('outlook.com/mail');
+  const isOffice = baseOrigin.includes('outlook.office') || baseOrigin.includes('office365') || baseOrigin.includes('microsoft.com');
+
+  // Build the compose deeplink URL
+  // Office 365 / OWA: /mail/deeplink/compose?to=&subject=&body=
+  // Outlook.com:       /mail/0/deeplink/compose?to=&subject=&body=
+  let composePath;
+  if (isLive) {
+    composePath = '/mail/0/deeplink/compose';
+  } else {
+    composePath = '/mail/deeplink/compose';
+  }
+
+  // We pass a short plaintext body in the URL (enough for context)
+  // Full HTML goes via clipboard — user just pastes once
+  const shortPlain = plainBody.slice(0, 1800);
+  const params = new URLSearchParams();
+  if (to) params.set('to', to);
+  params.set('subject', subject);
+  params.set('body', shortPlain);
+
+  const composeUrl = `${baseOrigin}${composePath}?${params.toString()}`;
+
+  // Open compose window
+  const win = window.open(composeUrl, '_blank', 'noopener,noreferrer');
+
+  // Show smart toast based on what happened
+  if (win) {
+    showOutlookToast(
+      '✓ Outlook compose opened with To & Subject pre-filled.\n' +
+      'Rich table copied to clipboard — click in the email body and press Ctrl+V to paste the formatted table.',
+      7000
+    );
+  } else {
+    // Popup blocked — redirect in same tab
+    showOutlookToast('✓ Rich table copied to clipboard. Opening Outlook...', 4000);
+    setTimeout(() => { window.location.href = composeUrl; }, 300);
+  }
+}
+
+function buildHtmlEmailTable(rows) {
+  const tblStyle = 'border-collapse:collapse;font-family:Calibri,Arial,sans-serif;font-size:13px;width:100%;';
+  const thStyle  = 'border:1px solid #aaa;padding:8px 12px;background:#1f3864;color:#ffffff;font-weight:600;text-align:left;white-space:nowrap;';
+  const tdStyle  = 'border:1px solid #ccc;padding:8px 12px;color:#222;vertical-align:top;';
+  const tdHStyle = 'border:1px solid #ccc;padding:8px 12px;color:#222;text-align:right;font-weight:600;white-space:nowrap;';
+  const trTotalStyle = 'background:#e8f0fe;';
+  const tdTotalStyle = 'border:1px solid #aaa;padding:8px 12px;color:#1f3864;font-weight:700;';
+  const tdTotalHStyle= 'border:1px solid #aaa;padding:8px 12px;color:#1f3864;font-weight:700;text-align:right;';
+  const evenBg = 'background:#f8f9ff;';
+
+  return `<table style="${tblStyle}">` +
+    rows.map((r, i) => {
+      const isTotal = r.classList.contains('total-row');
+      const cells = [...r.querySelectorAll('th,td')];
+      const rowBg = (!isTotal && i % 2 === 0 && i > 0) ? evenBg : '';
+      const rowStyle = isTotal ? trTotalStyle : rowBg;
+      return `<tr style="${rowStyle}">` + cells.map((c, ci) => {
+        const isHeader = c.tagName === 'TH';
+        const isHours = ci === 2;
+        let s;
+        if (isHeader) s = thStyle;
+        else if (isTotal) s = isHours ? tdTotalHStyle : tdTotalStyle;
+        else s = isHours ? tdHStyle : tdStyle;
+        const text = c.innerText.replace(/\n/g,' ').trim();
+        return `<${isHeader?'th':'td'} style="${s}">${text}</${isHeader?'th':'td'}>`;
+      }).join('') + '</tr>';
+    }).join('') + '</table>';
+}
+
+function copyAndOpenMailto(to, subject, htmlBody, plainBody) {
+  copyToClipboard(htmlBody, plainBody).then(() => {
+    showOutlookToast('✓ Report copied! Outlook is opening — paste (Ctrl+V) into the email body.', 6000);
+    setTimeout(() => {
+      window.location.href = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}`;
+    }, 600);
+  });
+}
+
+function copyToClipboard(htmlBody, plainBody) {
+  if (navigator.clipboard && window.ClipboardItem) {
+    return navigator.clipboard.write([new ClipboardItem({
+      'text/html': new Blob([htmlBody], { type: 'text/html' }),
+      'text/plain': new Blob([plainBody], { type: 'text/plain' }),
+    })]).catch(() => navigator.clipboard.writeText(plainBody));
+  }
+  return navigator.clipboard ? navigator.clipboard.writeText(plainBody) : Promise.resolve();
+}
+
+function showOutlookToast(msg, duration = 5000) {
+  let toast = document.getElementById('outlook-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'outlook-toast';
+    toast.style.cssText = [
+      'position:fixed','bottom:28px','left:50%','transform:translateX(-50%)',
+      'background:#1a1d27','border:1px solid rgba(123,111,240,0.6)',
+      'color:#c8cce0','font-family:\'IBM Plex Mono\',monospace','font-size:12px',
+      'padding:14px 22px','border-radius:8px','z-index:99999',
+      'box-shadow:0 8px 40px rgba(0,0,0,0.6)',
+      'max-width:520px','text-align:center','line-height:1.7','white-space:pre-line',
+    ].join(';');
+    document.head.insertAdjacentHTML('beforeend',
+      `<style>@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}` +
+      `#outlook-toast{animation:toastIn 0.2s ease;}</style>`
+    );
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.display = 'block';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { toast.style.display = 'none'; }, duration);
+}
+
+function buildHtmlEmailTable(rows) {
+  const style = 'border-collapse:collapse;font-family:Arial,sans-serif;font-size:13px;';
+  const thStyle = 'border:1px solid #555;padding:8px 12px;background:#1a1a2e;color:#c0c4d8;font-weight:600;text-align:left;';
+  const tdStyle = 'border:1px solid #3a3a5c;padding:8px 12px;color:#d0d4e8;';
+  const totalStyle = 'border:1px solid #3a3a5c;padding:8px 12px;color:#e8eaf2;font-weight:700;background:#111320;';
+  return `<table style="${style}">` +
+    rows.map((r, i) => {
+      const isTotal = r.classList.contains('total-row');
+      return '<tr>' + [...r.querySelectorAll('th,td')].map(c => {
+        const isHeader = c.tagName === 'TH';
+        const s = isHeader ? thStyle : (isTotal ? totalStyle : tdStyle);
+        return `<${isHeader?'th':'td'} style="${s}">${c.innerText.replace(/\n/g,' ').trim()}</${isHeader?'th':'td'}>`;
+      }).join('') + '</tr>';
+    }).join('') + '</table>';
 }
 
 /* ══════════════════════════════════════════
@@ -1047,7 +1692,7 @@ function copyFullReport() {
   const longDate = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' });
   const rows = [...document.getElementById('report-table').querySelectorAll('tr')];
   const tsv = rows.map(r => [...r.querySelectorAll('th,td')].map(c => c.innerText.replace(/\n/g,' ').trim()).join('\t')).join('\n');
-  const html = buildHtmlTable(rows);
+  const html = buildHtmlEmailTable(rows);
   const htmlBody = `<p>Date - ${longDate}<br>Employee Name: ${devName}<br>Project / Client Name: ${project}</p>${html}<p>Best Regards,<br>${devName}</p>`;
   const plain = `Date - ${longDate}\nEmployee Name: ${devName}\nProject / Client Name: ${project}\n\n${tsv}\n\nBest Regards,\n${devName}`;
   if (navigator.clipboard && window.ClipboardItem) {
